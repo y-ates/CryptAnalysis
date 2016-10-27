@@ -312,6 +312,10 @@ void cipherONE::usage(char* programname){
 int main(int argc, char** argv){
 	cipherONE cipher;
 
+	if(argc == 1){
+		cipher.usage(argv[0]);
+		return 1;
+	}
 	
 	if((std::string(argv[1]) == "-h") || (std::string(argv[1]) == "--help")){
 		cipher.usage(argv[0]);		
