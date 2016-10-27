@@ -257,7 +257,7 @@ void cipherONE::error_handler(char* programname, int signal){
 		std::cout << "[-] Warning:"
 			  << " You entered more arguments than expected."
 			  << " I will only choose the first few..."
-			  << std::endl;
+			  << std::endl << std::endl;
 		break;
 	case 2:
 		usage(programname);
@@ -311,28 +311,46 @@ void cipherONE::usage(char* programname){
 
 int main(int argc, char** argv){
 	cipherONE cipher;
-	int expect_arg_cnt = cipher.get_k_cnt()+4;
-	
-	if(argc < expect_arg_cnt){
-		cipher.error_handler(argv[0], 0);
-		return 1;
-	} else if(argc > expect_arg_cnt){
-		cipher.error_handler(argv[0], 1);
-		return 1;
-	}
 
 	
 	if((std::string(argv[1]) == "-h") || (std::string(argv[1]) == "--help")){
 		cipher.usage(argv[0]);		
 	} else if((std::string(argv[1]) == "-e") || (std::string(argv[1]) == "--encrypt")){
+		int expect_arg_cnt = cipher.get_k_cnt()+3;
+				
+		if(argc < expect_arg_cnt){
+			cipher.error_handler(argv[0], 0);
+			return 1;
+		} else if(argc > expect_arg_cnt){
+			cipher.error_handler(argv[0], 1);
+		}
+		
 		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4])};
 		//cipher.setKey(key);
-		cipher.encrypt(atoi(argv[2]), key);		
+		cipher.encrypt(atoi(argv[2]), key);
 	} else if((std::string(argv[1]) == "-d") || (std::string(argv[1]) == "--decrypt")){
+		int expect_arg_cnt = cipher.get_k_cnt()+3;
+				
+		if(argc < expect_arg_cnt){
+			cipher.error_handler(argv[0], 0);
+			return 1;
+		} else if(argc > expect_arg_cnt){
+			cipher.error_handler(argv[0], 1);
+		}
+		
 		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4])};
 		//cipher.setKey(key);
 		cipher.decrypt(atoi(argv[2]), key);
 	} else if((std::string(argv[1]) == "-a") || (std::string(argv[1]) == "--attack")){
+		int expect_arg_cnt = 6;
+				
+		if(argc < expect_arg_cnt){
+			cipher.error_handler(argv[0], 0);
+			return 1;
+		} else if(argc > expect_arg_cnt){
+			cipher.error_handler(argv[0], 1);
+		}
+
 		int m[cipher.get_k_cnt()] = {atoi(argv[2]), atoi(argv[3])};
 		int c[cipher.get_k_cnt()] = {atoi(argv[4]), atoi(argv[5])};
 		cipher.attack(m, c);
