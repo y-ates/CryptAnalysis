@@ -121,7 +121,7 @@ int cipherONE::decrypt(int c, int k[k_cnt], int silent=0){
 	m %= 16;
 
 	if(silent == 0){
-		std::cout << "Encrypting with:"
+		std::cout << "Decrypting with:"
 		  << std::endl
 		  << "---"
 		  << std::endl
