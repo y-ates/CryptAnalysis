@@ -319,7 +319,8 @@ int main(int argc, char** argv){
 	
 	if((std::string(argv[1]) == "-h") || (std::string(argv[1]) == "--help")){
 		cipher.usage(argv[0]);		
-	} else if((std::string(argv[1]) == "-e") || (std::string(argv[1]) == "--encrypt")){
+	} else if((std::string(argv[1]) == "-e")
+		  || (std::string(argv[1]) == "--encrypt")){
 		int expect_arg_cnt = cipher.get_k_cnt()+3;
 				
 		if(argc < expect_arg_cnt){
@@ -332,7 +333,8 @@ int main(int argc, char** argv){
 		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4])};
 		//cipher.setKey(key);
 		cipher.encrypt(atoi(argv[2]), key);
-	} else if((std::string(argv[1]) == "-d") || (std::string(argv[1]) == "--decrypt")){
+	} else if((std::string(argv[1]) == "-d")
+		  || (std::string(argv[1]) == "--decrypt")){
 		int expect_arg_cnt = cipher.get_k_cnt()+3;
 				
 		if(argc < expect_arg_cnt){
@@ -345,7 +347,8 @@ int main(int argc, char** argv){
 		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4])};
 		//cipher.setKey(key);
 		cipher.decrypt(atoi(argv[2]), key);
-	} else if((std::string(argv[1]) == "-a") || (std::string(argv[1]) == "--attack")){
+	} else if((std::string(argv[1]) == "-a")
+		  || (std::string(argv[1]) == "--attack")){
 		int expect_arg_cnt = 6;
 				
 		if(argc < expect_arg_cnt){
