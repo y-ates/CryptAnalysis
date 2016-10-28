@@ -16,7 +16,6 @@
  ******************************************************************************/
 
 #include "cipherTWO.h"
-#include <iomanip>
 
 const char cipherTWO::SBox[] = {
 	6, 4, 12, 5, 0, 7, 2, 14,
@@ -175,6 +174,9 @@ int cipherTWO::decrypt(int c, int k[k_cnt], int silent=0){
 }
 
 std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
+	std::ios state(NULL);
+	state.copyfmt(std::cout);
+	
 	const int pair_cnt = 2;
 	const int table_size = 16;
 	const char sep = ' ';
@@ -220,6 +222,30 @@ std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
 			  << std::setfill(sep) << int(v_diff[i])
 			  << std::endl;
 	}
+	// reset std::cout state
+	std::cout.copyfmt(state);
+
+	std::vector<char> v_diff_copy(v_diff);
+	int max_occ[table_size] = {0};
+	int max = 0;
+	int element = 0;
+	
+	std::sort(v_diff_copy.begin(), v_diff_copy.end());
+	for(int i=0; i<table_size; ++i){
+		max_occ[int(v_diff_copy[i])] += 1;
+	}
+
+	for(int i=0; i<table_size; ++i){
+		if(max_occ[i] > max){
+			max = max_occ[i];
+			element = i;
+		}
+	}
+
+	std::cout << std::endl << "[+] NOTE: Element "
+		  << element << " occurs in " << max << "/"
+		  << table_size << " times."
+		  << std::endl;
 
 	return v_diff;
 }

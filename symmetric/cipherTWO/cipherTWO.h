@@ -20,6 +20,8 @@
 
 #include <iostream>
 #include <vector>
+#include <iomanip>
+#include <algorithm>
 #include <stdlib.h>
 
 class cipherTWO{
