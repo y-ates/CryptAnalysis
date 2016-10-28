@@ -125,7 +125,7 @@ int cipherTWO::decrypt(int c, int k[k_cnt], int silent=0){
 	x = c ^ k[2];
 	x %= 16;
 	
-	w = getSBox_inv(v);
+	w = getSBox_inv(x);
 	w %= 16;
 
 	v = w ^ k[1];
@@ -177,7 +177,6 @@ std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
 	std::ios state(NULL);
 	state.copyfmt(std::cout);
 	
-	const int pair_cnt = 2;
 	const int table_size = 16;
 	const char sep = ' ';
 	const int entry_width = 12;
@@ -251,25 +250,38 @@ std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
 }
 
 std::vector<int> cipherTWO::attack(int* m, int* c, int silent=0){
-	const int pair_cnt = 2;
 	const int table_size = 16;
-	int m_diff = 0;	
+	int m_diff = 0;
+	int pair_cnt;
 	std::vector<int> possible_keys;
 
+	int m_size = sizeof(m)/sizeof(int);
+	int c_size = sizeof(c)/sizeof(int);
+	if(m_size == 0 || c_size == 0)
+		return (std::vector<int>)1;
+	
+	if(m_size != c_size){
+		if(m_size > c_size){
+			pair_cnt = c_size;
+		} else {
+			pair_cnt = m_size;
+		}
+	} else {
+		pair_cnt = m_size;
+	}
+	
 	if(silent == 0){
 		std::cout << "Attacking with:"
 			  << std::endl
 			  << "---"
-			  << std::endl
-			  << "m0: " << int(m[0])
-			  << std::endl
-			  << "m1: " << int(m[1])
-			  << std::endl
-			  << "c0: " << int(c[0])
-			  << std::endl
-			  << "c1: " << int(c[1])
-			  << std::endl
-			  << "---"
+			  << std::endl;
+		for(int i=0; i<m_size; ++i){
+			std::cout << "m" << i << ": "
+				  << int(m[i]) << std::endl;
+			std::cout << "c" << i << ": " << int(c[i])
+				  << std::endl;
+		}
+		std::cout << "---"
 			  << std::endl;
 	}
 
