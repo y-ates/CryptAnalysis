@@ -39,7 +39,7 @@ public:
 	char getSBox(int index);
 	char getSBox_inv(int index);
 	std::vector<int> attack(int* m, int* c, int silent);
-	char* get_influence_SBox(char diff);
+	std::vector<char> get_influence_SBox(char diff);
 	int encrypt(int m, int k[k_cnt]);
 	int decrypt(int c, int k[k_cnt], int silent);
 	void setKey(int* k_new);

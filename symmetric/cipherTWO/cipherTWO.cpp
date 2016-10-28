@@ -25,7 +25,7 @@ const char cipherTWO::SBox[] = {
 
 const char cipherTWO::SBox_inv[] = {
 	4, 8, 6, 10, 1, 3, 0, 5,
-	12, 14, 13, 15, 2, 11, 7, 9,
+	12, 14, 13, 15, 2, 11, 7, 9
 };
 
 
@@ -37,7 +37,7 @@ char cipherTWO::getSBox(int index){
 }
 
 char cipherTWO::getSBox_inv(int index){
-	return SBox_inv[index];
+	return SBox_inv[index%16];
 }
 
 int cipherTWO::get_k_cnt(){
@@ -161,9 +161,9 @@ int cipherTWO::decrypt(int c, int k[k_cnt], int silent=0){
 		  << std::endl
 		  << "v: " << int(v)
 		  << std::endl
-		  << "m: " << int(w)
+		  << "w: " << int(w)
 		  << std::endl
-		  << "m: " << int(x)
+		  << "x: " << int(x)
 		  << std::endl
 		  << "m: " << int(m)
 		  << std::endl
@@ -174,18 +174,17 @@ int cipherTWO::decrypt(int c, int k[k_cnt], int silent=0){
 	return int(m);
 }
 
-char* cipherTWO::get_influence_SBox(char diff=15){
+std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
 	const int pair_cnt = 2;
 	const int table_size = 16;
 	const char sep = ' ';
 	const int entry_width = 12;
-	char v0[table_size], v1[table_size], u0[table_size], u1[table_size],
-		v_diff[table_size];
+	char v0[table_size], v1[table_size], u0[table_size], u1[table_size];
+	std::vector<char> v_diff(table_size);
 	
 	for(int i=0; i<table_size; ++i){
 		u0[i] = i;
 		u0[i] %= 16;
-		//std::cout << int(diff)%16 << std::endl;
 		u1[i] = i ^ diff;
 		u1[i] %= 16;
 
@@ -195,21 +194,31 @@ char* cipherTWO::get_influence_SBox(char diff=15){
 		v_diff[i] = v0[i] ^ v1[i];
 	}
 
-	std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << "u0";
-	std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << "u1=u0^15";
-	std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << "v0=S(u0)";
-	std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << "v1=S(u1)";
 	std::cout << std::left << std::setw(entry_width) << std::setfill(sep)
-			  << "v1^v2" << std::endl;
-	std::cout << "-------------------------------------------------------" << std::endl;
+		  << "u0";
+	std::cout << std::left << std::setw(entry_width) << std::setfill(sep)
+		  << "u1=u0^15";
+	std::cout << std::left << std::setw(entry_width) << std::setfill(sep)
+		  << "v0=S(u0)";
+	std::cout << std::left << std::setw(entry_width) << std::setfill(sep)
+		  << "v1=S(u1)";
+	std::cout << std::left << std::setw(entry_width) << std::setfill(sep)
+		  << "v1^v2" << std::endl;
+	std::cout << "-------------------------------------------------------"
+		  << std::endl;
+	
 	for(int i=0; i<table_size; ++i){
-		std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << int(u0[i]);
-		std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << int(u1[i]);
-		std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << int(v0[i]);
-		std::cout << std::left << std::setw(entry_width) << std::setfill(sep) << int(v1[i]);
-		std::cout << std::left << std::setw(entry_width) << std::setfill(sep)
-			  << int(v_diff[i]) << std::endl;
-		//std::cout << v_diff[i] << std::endl;
+		std::cout << std::left << std::setw(entry_width)
+			  << std::setfill(sep) << int(u0[i]);
+		std::cout << std::left << std::setw(entry_width)
+			  << std::setfill(sep) << int(u1[i]);
+		std::cout << std::left << std::setw(entry_width)
+			  << std::setfill(sep) << int(v0[i]);
+		std::cout << std::left << std::setw(entry_width)
+			  << std::setfill(sep) << int(v1[i]);
+		std::cout << std::left << std::setw(entry_width)
+			  << std::setfill(sep) << int(v_diff[i])
+			  << std::endl;
 	}
 
 	return v_diff;
@@ -343,10 +352,10 @@ void cipherTWO::usage(char* programname){
 		  << std::endl
 		  << "----"
 		  << std::endl
-		  << " [-e|--encrypt] <message byte> <key byte 0> <key byte 1>:"
+		  << " [-e|--encrypt] <message byte> <key byte 0> <key byte 1> <key byte 2>:"
 		  << "    Encrypt plaintext-byte with cipherTWO."
 		  << std::endl
-		  << " [-d|--decrypt] <cipher byte> <key byte 0> <key byte 1>:"
+		  << " [-d|--decrypt] <cipher byte> <key byte 0> <key byte 1> <key byte 2>:"
 		  << "    Decrypt cipher-byte with cipherTWO."
 		  << std::endl
 		  << " [-a|--attack] <message byte 0> <message byte 1> <cipher byte 0> <cipher byte 1>:"
@@ -386,7 +395,8 @@ int main(int argc, char** argv){
 	
 	if((std::string(argv[1]) == "-h") || (std::string(argv[1]) == "--help")){
 		cipher.usage(argv[0]);		
-	} else if((std::string(argv[1]) == "-e") || (std::string(argv[1]) == "--encrypt")){
+	} else if((std::string(argv[1]) == "-e")
+		  || (std::string(argv[1]) == "--encrypt")){
 		int expect_arg_cnt = cipher.get_k_cnt()+3;
 				
 		if(argc < expect_arg_cnt){
@@ -396,10 +406,12 @@ int main(int argc, char** argv){
 			cipher.error_handler(argv[0], 1);
 		}
 		
-		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4])};
+		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4]),
+					       atoi(argv[5])};
 		//cipher.setKey(key);
 		cipher.encrypt(atoi(argv[2]), key);
-	} else if((std::string(argv[1]) == "-d") || (std::string(argv[1]) == "--decrypt")){
+	} else if((std::string(argv[1]) == "-d")
+		  || (std::string(argv[1]) == "--decrypt")){
 		int expect_arg_cnt = cipher.get_k_cnt()+3;
 				
 		if(argc < expect_arg_cnt){
@@ -409,11 +421,14 @@ int main(int argc, char** argv){
 			cipher.error_handler(argv[0], 1);
 		}
 		
-		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4])};
+		int key[cipher.get_k_cnt()] = {atoi(argv[3]), atoi(argv[4]),
+					       atoi(argv[5])};
 		//cipher.setKey(key);
 		cipher.decrypt(atoi(argv[2]), key);
-	} else if((std::string(argv[1]) == "-a") || (std::string(argv[1]) == "--attack")){
+	} else if((std::string(argv[1]) == "-a")
+		  || (std::string(argv[1]) == "--attack")){
 		int expect_arg_cnt = 6;
+		int count_pair = 2;
 				
 		if(argc < expect_arg_cnt){
 			cipher.error_handler(argv[0], 0);
@@ -422,16 +437,20 @@ int main(int argc, char** argv){
 			cipher.error_handler(argv[0], 1);
 		}
 
-		int m[cipher.get_k_cnt()] = {atoi(argv[2]), atoi(argv[3])};
-		int c[cipher.get_k_cnt()] = {atoi(argv[4]), atoi(argv[5])};
+		int m[count_pair] = {atoi(argv[2]), atoi(argv[3])};
+		int c[count_pair] = {atoi(argv[4]), atoi(argv[5])};
 		cipher.attack(m, c);
-	} else if((std::string(argv[1]) == "-as") || (std::string(argv[1]) == "--analyse-sbox")){
+	} else if((std::string(argv[1]) == "-as")
+		  || (std::string(argv[1]) == "--analyse-sbox")){
 		int expect_arg_cnt = 2;
 				
 		if(argc < expect_arg_cnt){
 			cipher.error_handler(argv[0], 0);
 			return 1;
 		} else if(argc > expect_arg_cnt){
+			int char_test = atoi(argv[2]);
+			cipher.get_influence_SBox(char_test);
+		} else if(argc > expect_arg_cnt+1){
 			cipher.error_handler(argv[0], 1);
 			int char_test = atoi(argv[2]);
 			cipher.get_influence_SBox(char_test);
