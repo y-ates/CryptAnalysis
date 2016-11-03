@@ -41,6 +41,7 @@ public:
 	char getSBox(int index);
 	char getSBox_inv(int index);
 	std::vector<int> attack(int* m, int* c, int silent);
+	std::vector<int> sbox_statistics(std::vector<char> v_diff, int table_size, int silent);
 	std::vector<char> get_influence_SBox(char diff);
 	int encrypt(int m, int k[k_cnt]);
 	int decrypt(int c, int k[k_cnt], int silent);

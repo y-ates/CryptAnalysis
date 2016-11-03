@@ -224,10 +224,17 @@ std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
 	// reset std::cout state
 	std::cout.copyfmt(state);
 
-	std::vector<char> v_diff_copy(v_diff);
+	//std::vector<int> v_diff_copy(v_diff);
+	sbox_statistics(v_diff, table_size, 0);
+
+	return v_diff;
+}
+
+std::vector<int> cipherTWO::sbox_statistics(std::vector<char> v_diff_copy, int table_size, int silent=1){
 	int max_occ[table_size] = {0};
 	int max = 0;
 	int element = 0;
+	std::vector<int> result(2);
 	
 	std::sort(v_diff_copy.begin(), v_diff_copy.end());
 	for(int i=0; i<table_size; ++i){
@@ -241,17 +248,23 @@ std::vector<char> cipherTWO::get_influence_SBox(char diff=15){
 		}
 	}
 
-	std::cout << std::endl << "[+] NOTE: Element "
-		  << element << " occurs in " << max << "/"
-		  << table_size << " times."
-		  << std::endl;
+	if(silent == 0){
+		std::cout << std::endl << "[+] NOTE: Element "
+			  << element << " occurs in " << max << "/"
+			  << table_size << " times."
+			  << std::endl;
 
-	return v_diff;
+	}
+	
+	result[0] = element;
+	result[1] = max;
+
+	return result;
 }
 
 std::vector<int> cipherTWO::attack(int* m, int* c, int silent=0){
 	const int table_size = 16;
-	int m_diff = 0;
+	int v_diff = 0;
 	int pair_cnt;
 	std::vector<int> possible_keys;
 
@@ -289,24 +302,28 @@ std::vector<int> cipherTWO::attack(int* m, int* c, int silent=0){
 		m[i] %= 16;
 		c[i] %= 16;
 
-		m_diff ^= m[i];
+		//m_diff ^= m[i];
 	}
+
+	
 
 	int v_[pair_cnt];
 	int u_[pair_cnt];
+	int w_[pair_cnt];
+	int x_[pair_cnt];
 	for(int i=0; i<table_size; ++i){
 		int c_diff = 0;
 		
 		for(int j=0; j<pair_cnt; ++j){
-			v_[j] = c[j] ^ i;
-			u_[j] = getSBox_inv(v_[j]);
+			x_[j] = c[j] ^ i;
+			w_[j] = getSBox_inv(v_[j]);
 		}
 
 		for(int j=0; j<pair_cnt; ++j){
-			c_diff ^= u_[j];
+			c_diff ^= w_[j];
 		}
 
-		if(c_diff == m_diff)
+		if(c_diff == v_diff)
 			possible_keys.push_back(i);
 	}
 
