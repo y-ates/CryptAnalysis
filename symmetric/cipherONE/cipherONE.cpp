@@ -19,13 +19,13 @@
 
 
 const char cipherONE::SBox[] = {
-	'6', '4', 'c', '5', '0', '7', '2', 'e',
-	'1', 'f', '3', 'd', '8', 'a', '9', 'b'
+	6, 4, 12, 5, 0, 7, 2, 14,
+	1, 15 , 3, 13, 8, 10, 9, 11
 };
 
 const char cipherONE::SBox_inv[] = {
-	'4', '8', '6', 'a', '1', '3', '0', '5',
-	'c', 'e', 'd', 'f', '2', 'b', '7', '9',
+	4, 8, 6, 10, 1, 3, 0, 5,
+	12, 14, 13, 15, 2, 11, 7, 9,
 };
 
 
@@ -33,11 +33,11 @@ const char* cipherONE::version = "1.0";
 
 
 char cipherONE::getSBox(int index){
-	return SBox[index];
+	return SBox[index%16];
 }
 
 char cipherONE::getSBox_inv(int index){
-	return SBox_inv[index];
+	return SBox_inv[index%16];
 }
 
 int cipherONE::get_k_cnt(){
