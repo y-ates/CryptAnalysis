@@ -78,12 +78,14 @@ def getSBox(i):
 
     return sbox[i]
 
-def core(word, iteration):
+def core_keySched(word, iteration):
     word = rotate(word)
+    
     for i in range(4):
         word[i] = getSBox(word[i])
 
     word[0] = word[0] ^ getRconValue(iteration)
+    
     return word
 
 
@@ -100,7 +102,7 @@ def key_schedule(key, r):
     res = [0] * 16
     tmp = res
     
-    res[0:4] = core(key[12:16], r)
+    res[0:4] = core_keySched(key[12:16], r)
 
     for i in range(4):
         tmp[i] = res[i] ^ key[i]
