@@ -50,7 +50,7 @@ def getRconValue(num):
     
     return Rcon[num]
 
-def core(word, iteration):
+def core_keySched(word, iteration):
     word = rotate(word)
     
     for i in range(4):
@@ -69,18 +69,18 @@ def createRoundKey(expandedKey):
     return roundKey
 
 def key_schedule(key, r):
+    tmp = [0] * 4
     res = [0] * 16
-    tmp = res
     
-    res[0:4] = core(key[12:16], r)
+    tmp[0:4] = core_keySched(key[12:16], r)
 
     for i in range(4):
-        tmp[i] = res[i] ^ key[i]
+        res[i] = tmp[i] ^ key[i]
 
     for i in range(4, 16):
-        tmp[i] = tmp[i-4] ^ key[i]
+        res[i] = res[i-4] ^ key[i]
 
-    return tmp
+    return res
 
 
 def addRoundKey(state, roundKey):
@@ -146,6 +146,7 @@ def mixColumns(state):
 
 def g_mul(x, y):
     res = 0
+    
     for counter in range(8):
         if y & 1:
             res ^= x
@@ -190,6 +191,7 @@ def getSBox(i):
 
     return sbox[i]
 
+
 def getSBox_inv(i):
     sboxInv = [0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3,
                0x9e, 0x81, 0xf3, 0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f,
@@ -228,13 +230,12 @@ def enc_4R(m, key, silent=False):
         for j in range(4):
             state[(j*4)+i] = m[(i*4)+j]
 
-    rKey = key
     state = addRoundKey(state, key)
     if not silent:
         print "Initial addRoundkey"
         unroll(state)
         for i in range(3):
-            rKey = key_schedule(rKey, i+1)
+            key = key_schedule(key, i+1)
             print "="*80, "\r\n"
             print "round:", i
             print "==="
@@ -251,7 +252,7 @@ def enc_4R(m, key, silent=False):
             print "mixColumns", "\r\n"
             unroll(state)
 
-            state = addRoundKey(state, rKey)
+            state = addRoundKey(state, key)
             print "addRoundkey", "\r\n"
             unroll(state)
 
@@ -259,7 +260,7 @@ def enc_4R(m, key, silent=False):
             print "Loop done."
             print "="*80, "\r\n"*2
 
-        rKey = key_schedule(rKey, 4)
+        key = key_schedule(key, 4)
         state = subBytes(state)
         print "subBytes", "\r\n"
         unroll(state)
@@ -268,21 +269,21 @@ def enc_4R(m, key, silent=False):
         print "shiftRows", "\r\n"
         unroll(state)
 
-        state = addRoundKey(state, rKey)
+        state = addRoundKey(state, key)
         print "addRoundkey", "\r\n"
         unroll(state)
     else:
         for i in range(3):
-            rKey = key_schedule(rKey, i+1)
+            key = key_schedule(key, i+1)
             state = subBytes(state)
             state = shiftRows(state)
             state = mixColumns(state)
-            state = addRoundKey(state, rKey)
+            state = addRoundKey(state, key)
 
-        rKey = key_schedule(rKey, 4)
+        key = key_schedule(key, 4)
         state = subBytes(state)
         state = shiftRows(state)
-        state = addRoundKey(state, rKey)
+        state = addRoundKey(state, key)
 
     output = [0] * 16
     for k in range(4):
