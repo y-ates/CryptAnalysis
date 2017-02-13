@@ -19,8 +19,6 @@ import sys
 import random
 from prettytable import PrettyTable
 
-def rotate(word):
-    return word[1:] + word[:1]
 
 def getRconValue(num):
     Rcon = [0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36,
@@ -47,121 +45,8 @@ def getRconValue(num):
             0xfa, 0xef, 0xc5, 0x91, 0x39, 0x72, 0xe4, 0xd3, 0xbd, 0x61, 0xc2,
             0x9f, 0x25, 0x4a, 0x94, 0x33, 0x66, 0xcc, 0x83, 0x1d, 0x3a, 0x74,
             0xe8, 0xcb]
-    
+
     return Rcon[num]
-
-def core_keySched(word, iteration):
-    word = rotate(word)
-    
-    for i in range(4):
-        word[i] = getSBox(word[i])
-
-    word[0] = word[0] ^ getRconValue(iteration)
-    
-    return word
-
-
-def createRoundKey(expandedKey):
-    roundKey = [0] * 16
-    for i in range(4):
-        for j in range(4):
-            roundKey[j*4+i] = expandedKey[i*4 + j]
-    return roundKey
-
-def key_schedule(key, r):
-    tmp = [0] * 4
-    res = [0] * 16
-    
-    tmp[0:4] = core_keySched(key[12:16], r)
-
-    for i in range(4):
-        res[i] = tmp[i] ^ key[i]
-
-    for i in range(4, 16):
-        res[i] = res[i-4] ^ key[i]
-
-    return res
-
-
-def addRoundKey(state, roundKey):
-    round_key = [0]*16
-    
-    for k in range(4):
-        for l in range(4):
-            round_key[(k*4)+l] = roundKey[k+(l*4)]
-
-    for i in range(16):
-        state[i] ^= round_key[i]
-
-    return state
-
-
-def subBytes(state):
-    for i in range(16):
-        state[i] = getSBox(state[i])
-            
-    return state
-
-
-def shiftRows(state):
-    for i in range(4):
-        statePtr = i*4
-
-        for j in range(i):
-            state[statePtr:statePtr+4] = state[statePtr+1:statePtr+4] \
-                                         + state[statePtr:statePtr+1]
-
-    return state
-
-
-def mixColumns(state):
-        for i in range(4):
-            column = state[i:i+16:4]
-
-            mult = [2, 1, 1, 3]
-                
-            column_tmp = list(column)
-
-            column[0] = g_mul(column_tmp[0], mult[0]) ^ \
-                        g_mul(column_tmp[3], mult[1]) ^ \
-                        g_mul(column_tmp[2], mult[2]) ^ \
-                        g_mul(column_tmp[1], mult[3])
-            column[1] = g_mul(column_tmp[1], mult[0]) ^ \
-                        g_mul(column_tmp[0], mult[1]) ^ \
-                        g_mul(column_tmp[3], mult[2]) ^ \
-                        g_mul(column_tmp[2], mult[3])
-            column[2] = g_mul(column_tmp[2], mult[0]) ^ \
-                        g_mul(column_tmp[1], mult[1]) ^ \
-                        g_mul(column_tmp[0], mult[2]) ^ \
-                        g_mul(column_tmp[3], mult[3])
-            column[3] = g_mul(column_tmp[3], mult[0]) ^ \
-                        g_mul(column_tmp[2], mult[1]) ^ \
-                        g_mul(column_tmp[1], mult[2]) ^ \
-                        g_mul(column_tmp[0], mult[3])
-
-            state[i:i+16:4] = column
-
-        return state
-
-
-def g_mul(x, y):
-    res = 0
-    
-    for counter in range(8):
-        if y & 1:
-            res ^= x
-
-        msb_set = x & 0x80
-        x <<= 1
-        x &= 0xFF
-
-        if msb_set:
-            x ^= 0x1b
-
-        y >>= 1
-
-    return res
-
 
 def getSBox(i):
     sbox =  [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67,
@@ -221,7 +106,129 @@ def getSBox_inv(i):
     return sboxInv[i]
 
 
+def rotate(word):
+    return word[1:] + word[:1]
+
+
+def core_keySched(word, iteration):
+    word = rotate(word)
+
+    for i in range(4):
+        word[i] = getSBox(word[i])
+
+    word[0] = word[0] ^ getRconValue(iteration)
+
+    return word
+
+
+def createRoundKey(expandedKey):
+    roundKey = [0] * 16
+
+    for i in range(4):
+        for j in range(4):
+            roundKey[j*4+i] = expandedKey[i*4 + j]
+
+    return roundKey
+
+
+def key_schedule(key, r):
+    tmp = [0] * 4
+    res = [0] * 16
+
+    tmp[0:4] = core_keySched(key[12:16], r)
+
+    for i in range(4):
+        res[i] = tmp[i] ^ key[i]
+
+    for i in range(4, 16):
+        res[i] = res[i-4] ^ key[i]
+
+    return res
+
+
+def addRoundKey(state, roundKey):
+    round_key = [0]*16
+
+    for k in range(4):
+        for l in range(4):
+            round_key[(k*4)+l] = roundKey[k+(l*4)]
+
+    for i in range(16):
+        state[i] ^= round_key[i]
+
+    return state
+
+
+def subBytes(state):
+    for i in range(16):
+        state[i] = getSBox(state[i])
+
+    return state
+
+
+def shiftRows(state):
+    for i in range(4):
+        statePtr = i*4
+
+        for j in range(i):
+            state[statePtr:statePtr+4] = state[statePtr+1:statePtr+4] \
+                                         + state[statePtr:statePtr+1]
+
+    return state
+
+
+def mixColumns(state):
+        for i in range(4):
+            column = state[i:i+16:4]
+
+            mult = [2, 1, 1, 3]
+
+            column_tmp = list(column)
+
+            column[0] = g_mul(column_tmp[0], mult[0]) ^ \
+                        g_mul(column_tmp[3], mult[1]) ^ \
+                        g_mul(column_tmp[2], mult[2]) ^ \
+                        g_mul(column_tmp[1], mult[3])
+            column[1] = g_mul(column_tmp[1], mult[0]) ^ \
+                        g_mul(column_tmp[0], mult[1]) ^ \
+                        g_mul(column_tmp[3], mult[2]) ^ \
+                        g_mul(column_tmp[2], mult[3])
+            column[2] = g_mul(column_tmp[2], mult[0]) ^ \
+                        g_mul(column_tmp[1], mult[1]) ^ \
+                        g_mul(column_tmp[0], mult[2]) ^ \
+                        g_mul(column_tmp[3], mult[3])
+            column[3] = g_mul(column_tmp[3], mult[0]) ^ \
+                        g_mul(column_tmp[2], mult[1]) ^ \
+                        g_mul(column_tmp[1], mult[2]) ^ \
+                        g_mul(column_tmp[0], mult[3])
+
+            state[i:i+16:4] = column
+
+        return state
+
+
+def g_mul(x, y):
+    res = 0
+
+    for counter in range(8):
+        if y & 1:
+            res ^= x
+
+        msb_set = x & 0x80
+        x <<= 1
+        x &= 0xFF
+
+        if msb_set:
+            x ^= 0x1b
+
+        y >>= 1
+
+    return res
+
+
 # 4 rounds
+# - 3 rounds and 1 final round
+# - final round has not mixColumns
 def enc_4R(m, key, silent=False):
     state = [0] * 16
     output = state
@@ -289,7 +296,7 @@ def enc_4R(m, key, silent=False):
     for k in range(4):
         for l in range(4):
             output[(k*4)+l] = state[k+(l*4)]
-            
+
     return output
 
 
@@ -313,20 +320,21 @@ def main():
     state_byte = [0] * 256
     k_recovered = [0] * 16
 
-    for x in range(16):
-        for i in range(256):
+    for x in range(16): # working with x'th byte of state
+        for i in range(256): # build up all possible lambda states (plaintexts in one active position)
             m[x] = i
             c[i] = enc_4R(m, key, True)
             state_byte[i] = c[i][x]
 
-        for i in range(256): # Guessed k 
+        for i in range(256): # Guessed k
             res = 0
-        
+
             for j in range(256): # j'th state of byte x
                 res ^= getSBox_inv(state_byte[j] ^ i)
 
             if res == 0:
                 print "key[", x, "]:", i
-                
+
+
 if __name__ == '__main__':
     main()
