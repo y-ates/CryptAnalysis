@@ -239,15 +239,15 @@ def enc_4R(m, key, silent=False):
             print "round:", i
             print "==="
 
-            state = subBytes(state, False)
+            state = subBytes(state)
             print "subBytes", "\r\n"
             unroll(state)
 
-            state = shiftRows(state, False)
+            state = shiftRows(state)
             print "shiftRows", "\r\n"
             unroll(state)
 
-            state = mixColumns(state, False)
+            state = mixColumns(state)
             print "mixColumns", "\r\n"
             unroll(state)
 
@@ -260,11 +260,11 @@ def enc_4R(m, key, silent=False):
             print "="*80, "\r\n"*2
 
         rKey = key_schedule(rKey, 4)
-        state = subBytes(state, False)
+        state = subBytes(state)
         print "subBytes", "\r\n"
         unroll(state)
 
-        state = shiftRows(state, False)
+        state = shiftRows(state)
         print "shiftRows", "\r\n"
         unroll(state)
 
@@ -274,14 +274,14 @@ def enc_4R(m, key, silent=False):
     else:
         for i in range(3):
             rKey = key_schedule(rKey, i+1)
-            state = subBytes(state, False)
-            state = shiftRows(state, False)
-            state = mixColumns(state, False)
+            state = subBytes(state)
+            state = shiftRows(state)
+            state = mixColumns(state)
             state = addRoundKey(state, rKey)
 
         rKey = key_schedule(rKey, 4)
-        state = subBytes(state, False)
-        state = shiftRows(state, False)
+        state = subBytes(state)
+        state = shiftRows(state)
         state = addRoundKey(state, rKey)
 
     output = [0] * 16
