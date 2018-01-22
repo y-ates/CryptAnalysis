@@ -105,9 +105,53 @@ def print_counter_table():
     sys.stdout.write("\r\n")
     sys.stdout.flush()
 
+def test_one_bit_in_out():
+    linear_approximation_table = [[0 for x in range(4)] for y in range(4)]
+    
+    X = [1, 2, 4, 8]
+    Y = [1, 2, 4, 8]
+
+    for i in range(4):
+        for j in range(4):
+            linear_approximation_table[i][j] = \
+                calculate_bias(linear_expressions[i], linear_expressions[j])
+
+    return linear_approximation_table
+
+
+def print_counter_table_one_bit_in_out():
+    linear_approximation_table = test_one_bit_in_out()
+    
+    for i in range(4):
+        sys.stdout.write("\r\n")
+        sys.stdout.flush()
+        for j in range(4):
+            sys.stdout.write(" " + str(linear_approximation_table[i][j]) + "\t")
+            sys.stdout.flush()
+    sys.stdout.write("\r\n")
+    sys.stdout.flush()
+
+    
 # Generate all possible linear expressions and initiate linear approximation
 # table 
 if __name__ == '__main__':
+    print "Linear Attack on PRESENT"
+    print "Yakup Ates, 2018\r\n\r\n"
+
+    print "- Compute the linear approximation table for the PRESENT S-Box"
     linear_expressions = create_linear_expression()
+    # P1.1 - Task 1
     print_counter_table()
+    print "- done.\r\r"
+    print
+    print
+    print "- Find all biased linear approximation with a one bit input and output mask."
+    # P1.1 - Task 2
+    print_counter_table_one_bit_in_out()
+    print "- done.\r\r"
+    print
+    print
+    
+    
+    
     
