@@ -26,6 +26,15 @@ def addRoundKey(state, key):
     return state ^ key
 
 
+# Permutation layer - using P-Box
+def pLayer(state):
+    res = 0
+    for i in range(64):
+        res += ((state >> i) & 0x01) << PBox(i)
+
+    return res
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
