@@ -15,11 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 import sys
 import random
-from prettytable import PrettyTable
-import itertools
+# from prettytable import PrettyTable
 
 linear_expressions = [0] * 16
 
