@@ -49,6 +49,15 @@ def key_schedule(key, nr):
     return roundkeys
 
 
+def string2number(i):
+    """ Convert a string to a number
+
+    Input: string (big-endian)
+    Output: long or integer
+    """
+    return int(i.encode('hex'),16)
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
