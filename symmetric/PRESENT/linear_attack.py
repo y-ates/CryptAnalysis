@@ -251,7 +251,40 @@ if __name__ == '__main__':
     print "- done.\r\r"
     print
     print
-    
-    
-    
-    
+    print "- Find a linear characteristic for some rounds with only one active S-Box per round."
+    # P1.1 - Task 3
+    #print_linear_characteristic_for_some_rounds()
+    print "- done.\r\r"
+    print
+    print
+    print "- Compute its bias."
+    # P1.1 - Task 4
+    #
+    print "- done.\r\r"
+    print
+    print
+    print "- Why do all these characteristic have the same absolute bias?"
+    # P1.1 - Task 5
+    #
+    print "- done.\r\r"
+    print
+    print
+    print """- Find the total number of linear characteristics in the linear
+    hull over r rounds with only one active S-Box per round (For any given
+    one-bit input and output mask).""" 
+    # P1.1 - Task 6
+    #print_linear_characteristic_for_some_rounds()
+    print "- done.\r\r"
+    print
+    print
+    print """- Execute some experiments to see how the bias is distributed over
+    the key."""
+    # P1.1 - Task 7
+    #print_linear_characteristic_for_some_rounds()
+    print "- done.\r\r"
+    print
+    print
+
+    # Test if PRESENT is implemented correctly by encrypting for a known (m,c)
+    # pair
+    # test_encryption()
