@@ -213,6 +213,25 @@ def print_counter_table_one_bit_in_out():
     sys.stdout.flush()
 
     
+
+def test_encryption():
+    print "Testing PRESENT encryption..."
+    print "m:", "FFFFFFFFFFFFFFFF"
+    print "key:", "00000000000000000000"
+    print "expected cipher:", "a112ffc72f68417b"
+    print
+
+    m = "FFFFFFFFFFFFFFFF".decode('hex')
+    key = "00000000000000000000".decode('hex')
+    expected_cipher = "a112ffc72f68417b"
+    res = enc(m, key)
+
+    if res.encode('hex') == expected_cipher:
+        print "  Encryption works as expected!"
+        print
+        print
+
+        
 # Generate all possible linear expressions and initiate linear approximation
 # table 
 if __name__ == '__main__':
