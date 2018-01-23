@@ -89,6 +89,21 @@ def PBox(i):
     return p[i]
 
 
+# Actually encrypting m with a key
+def enc(m, key):
+    round_key = key_schedule(key, 32)
+
+    state = string2number(m)
+    for i in range(31):
+        state = addRoundKey(state, round_key[i])
+        state = sBoxLayer(state)
+        state = pLayer(state)
+
+    state = addRoundKey(state, round_key[31])
+
+    return number2string_N(state,8)
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
