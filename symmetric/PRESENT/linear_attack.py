@@ -21,6 +21,7 @@ import random
 
 linear_expressions = [0] * 16
 
+
 # Simply XOR of state and key
 def addRoundKey(state, key):
     return state ^ key
@@ -106,7 +107,7 @@ def enc(m, key):
 
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
-    # Cryptanalysis" 
+    # Cryptanalysis"
     # SBox = [0xe, 0x4, 0xd, 0x1, 0x2, 0xf, 0xb, 0x8,
     #        0x3, 0xa, 0x6, 0xc, 0x5, 0x9, 0x0, 0x7]
 
@@ -116,9 +117,11 @@ def SBox(i):
 
     return SBox[i]
 
+
 # Returns the individual bit of an byte (byteval) at index (idx)
 def get_bit(byteval, idx):
     return ((byteval&(1<<idx))!=0)
+
 
 # Create all possible linear expressions
 # @param affine holds the actual activated bits in the expression
@@ -148,7 +151,7 @@ def calculate_bias(x, y):
     counter = 0
     for i in range(16):
         s = 0
-        
+
         for j in x:
             s ^= get_bit(i, j) # calculate X side of linear expression
         for j in y:
@@ -160,23 +163,25 @@ def calculate_bias(x, y):
 
     return counter-8
 
+
 # Iterate over all possible (m, c) pairs and return linear approximation table
 def test_all_bias():
     linear_approximation_table = [[0 for x in range(16)] for y in range(16)]
-    
+
     for i in range(16):
         for j in range(16):
             linear_approximation_table[i][j] = \
                 calculate_bias(linear_expressions[i], linear_expressions[j])
 
     return linear_approximation_table
-            
+
+
 # Print linear approximation table containing all bias
 # Dividing an element value by 16 gives the probability bias for the particular
 # linear combination of input and output bits
 def print_counter_table():
     linear_approximation_table = test_all_bias()
-    
+
     for i in range(16):
         sys.stdout.write("\r\n")
         sys.stdout.flush()
@@ -186,9 +191,10 @@ def print_counter_table():
     sys.stdout.write("\r\n")
     sys.stdout.flush()
 
+
 def test_one_bit_in_out():
     linear_approximation_table = [[0 for x in range(4)] for y in range(4)]
-    
+
     X = [1, 2, 4, 8]
     Y = [1, 2, 4, 8]
 
@@ -202,7 +208,7 @@ def test_one_bit_in_out():
 
 def print_counter_table_one_bit_in_out():
     linear_approximation_table = test_one_bit_in_out()
-    
+
     for i in range(4):
         sys.stdout.write("\r\n")
         sys.stdout.flush()
@@ -212,7 +218,6 @@ def print_counter_table_one_bit_in_out():
     sys.stdout.write("\r\n")
     sys.stdout.flush()
 
-    
 
 def test_encryption():
     print "Testing PRESENT encryption..."
@@ -232,8 +237,42 @@ def test_encryption():
         print
 
         
+def encrypt_for_x_rounds(m, key, x):
+    #key = [random.randint(0, 1) for i in range(80)]
+    #key = [0xF]*20
+    print res.encode('hex')
+    tmp = "0000000000000011".decode('hex')
+    for i in range(3):
+        #tmp = "5555555555555511".decode('hex')
+        #tmp = str(i).zfill(16).decode('hex')
+        #tmp = "0000000000000009".decode('hex')
+        if type(tmp) == str:
+            tmp = string2number(tmp)
+        tmp_res = sBoxLayer(tmp)
+        tmp_res = pLayer(tmp_res)
+
+        print number2string_N(tmp_res,8).encode('hex')
+
+        tmp_res = sBoxLayer(tmp_res)
+        tmp_res = pLayer(tmp_res)
+
+        print number2string_N(tmp_res,8).encode('hex')
+
+        #tmp_res = sBoxLayer(tmp_res)
+        #tmp_res = pLayer(tmp_res)
+
+        # tmp_res = sBoxLayer(tmp_res)
+        # tmp_res = pLayer(tmp_res)
+
+        #tmp_res = sBoxLayer(tmp_res)
+        #tmp_res = pLayer(tmp_res)
+
+        print number2string_N(tmp_res,8).encode('hex')
+
+
+
 # Generate all possible linear expressions and initiate linear approximation
-# table 
+# table
 if __name__ == '__main__':
     print "Linear Attack on PRESENT"
     print "Yakup Ates, 2018\r\n\r\n"
