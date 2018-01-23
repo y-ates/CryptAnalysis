@@ -58,6 +58,17 @@ def string2number(i):
     return int(i.encode('hex'),16)
 
 
+def number2string_N(i, N):
+    """Convert a number to a string of fixed size
+
+    i: long or integer
+    N: length of string
+    Output: string (big-endian)
+    """
+    s = '%0*x' % (N*2, i)
+    return s.decode('hex')
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
