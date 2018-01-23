@@ -21,6 +21,11 @@ import random
 
 linear_expressions = [0] * 16
 
+# Simply XOR of state and key
+def addRoundKey(state, key):
+    return state ^ key
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
