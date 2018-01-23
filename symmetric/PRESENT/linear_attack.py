@@ -35,6 +35,20 @@ def pLayer(state):
     return res
 
 
+# Key scheduler using the key and the specific round number
+def key_schedule(key, nr):
+    roundkeys = []
+    key = string2number(key)
+
+    for i in xrange(1, 32+1): # (K1 ... K32)
+        roundkeys.append(key >>16)
+        key = ((key & (2**19-1)) << 61) + (key >> 19)
+        key = (SBox(key >> 76) << 76)+(key & (2**76-1))
+        key ^= i << 15
+
+    return roundkeys
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
