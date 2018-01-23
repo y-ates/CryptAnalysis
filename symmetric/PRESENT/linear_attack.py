@@ -69,6 +69,16 @@ def number2string_N(i, N):
     return s.decode('hex')
 
 
+# SBoxLayer for the given state
+def sBoxLayer(state):
+    res = 0
+
+    for i in xrange(16):
+        res += SBox(( state >> (i*4)) & 0xF) << (i*4)
+
+    return res
+
+
 def SBox(i):
     # Example S-Box of paper by Howard M. Heys "Linear and Differential
     # Cryptanalysis" 
