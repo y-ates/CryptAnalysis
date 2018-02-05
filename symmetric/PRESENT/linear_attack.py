@@ -193,26 +193,24 @@ def print_counter_table():
 
 
 def test_one_bit_in_out():
-    linear_approximation_table = [[0 for x in range(4)] for y in range(4)]
+     X = [1, 2, 4, 8]
+     Y = [1, 2, 4, 8]
+     linear_approximation_table = test_all_bias()
 
-    X = [1, 2, 4, 8]
-    Y = [1, 2, 4, 8]
-
-    for i in range(4):
-        for j in range(4):
-            linear_approximation_table[i][j] = \
-                calculate_bias(linear_expressions[i], linear_expressions[j])
-
-    return linear_approximation_table
+     for i in X:
+         for j in Y:
+             print "Input:", i, "Output:", j, "Bias:", linear_approximation_table[i][j]
 
 
 def print_counter_table_one_bit_in_out():
-    linear_approximation_table = test_one_bit_in_out()
-
-    for i in range(4):
+    linear_approximation_table = test_all_bias()
+    X = [1, 2, 4, 8]
+    Y = [1, 2, 4, 8]
+    
+    for i in X:
         sys.stdout.write("\r\n")
         sys.stdout.flush()
-        for j in range(4):
+        for j in Y:
             sys.stdout.write(" " + str(linear_approximation_table[i][j]) + "\t")
             sys.stdout.flush()
     sys.stdout.write("\r\n")
@@ -232,10 +230,11 @@ def test_encryption():
     res = enc(m, key)
 
     if res.encode('hex') == expected_cipher:
-        print "  Encryption works as expected!"
+        print " Encryption works as expected!"
         print
         print
 
+        
         
 def encrypt_for_x_rounds(m, key, x):
     #key = [random.randint(0, 1) for i in range(80)]
@@ -270,6 +269,12 @@ def encrypt_for_x_rounds(m, key, x):
         print number2string_N(tmp_res,8).encode('hex')
 
 
+def print_linear_characteristic_for_some_rounds():
+    print "Input: (1, 0, 0, 0), (0, ...) ..."
+    print "Permutation laesst die Maske fix"
+    print "<(1,0,0,0), x> = <(1,0,0,0), S(x)> hat einen bias von -2 (siehe oben)"
+    print "1 runden iterative charakteristik von (8,0,0...) -> (8,0,0,...)"
+        
 
 # Generate all possible linear expressions and initiate linear approximation
 # table
@@ -292,19 +297,19 @@ if __name__ == '__main__':
     print
     print "- Find a linear characteristic for some rounds with only one active S-Box per round."
     # P1.1 - Task 3
-    #print_linear_characteristic_for_some_rounds()
+    print_linear_characteristic_for_some_rounds()
     print "- done.\r\r"
     print
     print
     print "- Compute its bias."
     # P1.1 - Task 4
-    #
+    print "Bias wurde bereits berechnet und ist bei: -2/16"
     print "- done.\r\r"
     print
     print
     print "- Why do all these characteristic have the same absolute bias?"
     # P1.1 - Task 5
-    #
+    print "Weil die SBox gut ausbalanciert ist und PRESENT sicher gegen diese Art von Angriff"
     print "- done.\r\r"
     print
     print
@@ -326,4 +331,4 @@ if __name__ == '__main__':
 
     # Test if PRESENT is implemented correctly by encrypting for a known (m,c)
     # pair
-    # test_encryption()
+    test_encryption()
