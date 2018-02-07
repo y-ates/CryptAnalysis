@@ -300,6 +300,16 @@ def linear_hull0(inMask, outMask, R, L=[]):
     return 0
 
 
+def linear_hull(inMask, outMask, R):
+    linear_layer = pLayer(inMask)
+
+    for i in range(R):
+        linear_layer = pLayer(sBoxLayer(linear_layer))
+        print linear_layer
+
+    if linear_layer/4 == outMask/4:
+        print "inMask:", inMask, "==", "outMask:", outMask
+        return 1
 # Generate all possible linear expressions and initiate linear approximation
 # table
 if __name__ == '__main__':
