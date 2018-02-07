@@ -310,6 +310,18 @@ def linear_hull(inMask, outMask, R):
     if linear_layer/4 == outMask/4:
         print "inMask:", inMask, "==", "outMask:", outMask
         return 1
+
+def try_hull_masks(R):
+    masks = []
+    
+    for i in range(65): # number of sbox * bit position
+            masks.append(1<<i)
+
+    for i in range(64):
+        for j in range(64):
+            linear_hull(masks[i], masks[j], R)
+            
+    
 # Generate all possible linear expressions and initiate linear approximation
 # table
 if __name__ == '__main__':
