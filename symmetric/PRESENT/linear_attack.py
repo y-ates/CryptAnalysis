@@ -305,17 +305,17 @@ def linear_hull(inMask, outMask, R):
     linear_layer = pLayer(inMask)
 
     for i in range(R):
-        linear_layer = pLayer(sBoxLayer(linear_layer))
-        print linear_layer
+        linear_layer = pLayer(linear_layer)
+        #print linear_layer
 
-    if linear_layer/4 == outMask/4:
+    if linear_layer == outMask:
         print "inMask:", inMask, "==", "outMask:", outMask
         return 1
 
 def try_hull_masks(R):
     masks = []
     
-    for i in range(65): # number of sbox * bit position
+    for i in range(64): # number of sbox * bit position
             masks.append(1<<i)
 
     for i in range(64):
@@ -364,7 +364,8 @@ if __name__ == '__main__':
     one-bit input and output mask)."""
     # P1.1 - Task 6
     #print linear_hull(64, 64, 8)
-    try_hull_masks(2)
+    #print linear_hull(4, 4, 2)
+    try_hull_masks(4)
     print "- done.\r\r"
     print
     print
