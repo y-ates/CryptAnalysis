@@ -177,7 +177,7 @@ def calculate_bias(x, y):
     # A0*X0 + A1*X1 + A2*X2 + A3*X3 + A4*X4 = B0*Y0 + B1*Y1 + B2*Y2 + B3*Y3 + B4*Y4
 
     counter = 0
-    for i in range(16): # i bit position
+    for i in range(16): # input for sbox
         s = 0
 
         for j in x:
@@ -242,50 +242,36 @@ def print_linear_characteristic_for_some_rounds():
     print "1 runden iterative charakteristik von (8,0,0...) -> (8,0,0,...)"
 
 
-def linear_hull0(inMask, outMask, R, L=[]):
-    if (inMask % 4) or (outMask % 4):
+
+def linear_hull(inMask, outMask, R):
+    return linear_hull0(inMask, outMask, R-1)
+
+    
+def linear_hull0(inMask, outMask, R):
+    print "inmask:", inMask, "outMask:", outMask, "R:", R
+    if (inMask % 4 == 3) or (outMask % 4 == 3):
         return 0
     
     if R == 0:
-        L.append(inMask)
-        L.append(outMask)
-        return 1
+        if (inMask // 4) == (outMask // 4):
+            return 1
+        else:
+            return 0
 
     s = [0, 0, 0]
     sum_ = 0
     for i in range(3):
-        s[i] = copy.deepcopy(L)
-        sbox = inMask/4
+        sbox = inMask//4
 
-        linear_layer = pLayer(sbox*4+i)        
-        if linear_layer == 3:
+        linear_layer = PBox(sbox*4+i)        
+        if (linear_layer % 4) == 3:
             continue
 
-    sum_ = sum_ + linear_hull(linear_layer, outMask, R-1, s[i])
-    print "here", sum_
-    return 0
+        sum_ = sum_ + linear_hull0(linear_layer, outMask, R-1)
 
+    print "inmask:", inMask, "outMask:", outMask, "R:", R, "Sum:", sum_
+    return sum_
 
-def linear_hull(inMask, outMask, R):
-    linear_layer = pLayer(inMask)
-
-    for i in range(R):
-        linear_layer = pLayer(linear_layer)
-        #print linear_layer
-
-    if linear_layer == outMask:
-        print "inMask:", inMask, "==", "outMask:", outMask
-        return 1
-
-def try_hull_masks(R):
-    masks = []
-    
-    for i in range(64): # number of sbox * bit position
-            masks.append(1<<i)
-
-    for i in range(64):
-        for j in range(64):
-            linear_hull(masks[i], masks[j], R)
             
     
 # Generate all possible linear expressions and initiate linear approximation
@@ -328,9 +314,7 @@ if __name__ == '__main__':
     hull over r rounds with only one active S-Box per round (For any given
     one-bit input and output mask)."""
     # P1.1 - Task 6
-    #print linear_hull(64, 64, 8)
-    #print linear_hull(4, 4, 2)
-    try_hull_masks(4)
+    print linear_hull(0,0,4)
     print "- done.\r\r"
     print
     print
