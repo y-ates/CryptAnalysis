@@ -17,6 +17,7 @@
 
 import sys
 import random
+import copy
 # from prettytable import PrettyTable
 
 linear_expressions = [0] * 16
@@ -206,7 +207,7 @@ def print_counter_table_one_bit_in_out():
     linear_approximation_table = test_all_bias()
     X = [1, 2, 4, 8]
     Y = [1, 2, 4, 8]
-    
+
     for i in X:
         sys.stdout.write("\r\n")
         sys.stdout.flush()
@@ -234,8 +235,8 @@ def test_encryption():
         print
         print
 
-        
-        
+
+
 def encrypt_for_x_rounds(m, key, x):
     #key = [random.randint(0, 1) for i in range(80)]
     #key = [0xF]*20
@@ -274,7 +275,7 @@ def print_linear_characteristic_for_some_rounds():
     print "Permutation laesst die Maske fix"
     print "<(1,0,0,0), x> = <(1,0,0,0), S(x)> hat einen bias von -2 (siehe oben)"
     print "1 runden iterative charakteristik von (8,0,0...) -> (8,0,0,...)"
-        
+
 
 def linear_hull0(inMask, outMask, R, L=[]):
     if (inMask % 4) or (outMask % 4):
@@ -360,9 +361,10 @@ if __name__ == '__main__':
     print
     print """- Find the total number of linear characteristics in the linear
     hull over r rounds with only one active S-Box per round (For any given
-    one-bit input and output mask).""" 
+    one-bit input and output mask)."""
     # P1.1 - Task 6
-    #print_linear_characteristic_for_some_rounds()
+    #print linear_hull(64, 64, 8)
+    try_hull_masks(2)
     print "- done.\r\r"
     print
     print
