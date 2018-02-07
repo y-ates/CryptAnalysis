@@ -23,6 +23,11 @@ import copy
 linear_expressions = [0] * 16
 
 
+################################################################################
+# PRESENT functions
+################################################################################
+
+
 # Simply XOR of state and key
 def addRoundKey(state, key):
     return state ^ key
@@ -123,6 +128,28 @@ def SBox(i):
 def get_bit(byteval, idx):
     return ((byteval&(1<<idx))!=0)
 
+def test_encryption():
+    print "Testing PRESENT encryption..."
+    print "m:", "FFFFFFFFFFFFFFFF"
+    print "key:", "00000000000000000000"
+    print "expected cipher:", "a112ffc72f68417b"
+    print
+
+    m = "FFFFFFFFFFFFFFFF".decode('hex')
+    key = "00000000000000000000".decode('hex')
+    expected_cipher = "a112ffc72f68417b"
+    res = enc(m, key)
+
+    if res.encode('hex') == expected_cipher:
+        print " Encryption works as expected!"
+        print
+        print
+
+
+################################################################################
+# Task functions
+################################################################################
+
 
 # Create all possible linear expressions
 # @param affine holds the actual activated bits in the expression
@@ -193,16 +220,6 @@ def print_counter_table():
     sys.stdout.flush()
 
 
-def test_one_bit_in_out():
-     X = [1, 2, 4, 8]
-     Y = [1, 2, 4, 8]
-     linear_approximation_table = test_all_bias()
-
-     for i in X:
-         for j in Y:
-             print "Input:", i, "Output:", j, "Bias:", linear_approximation_table[i][j]
-
-
 def print_counter_table_one_bit_in_out():
     linear_approximation_table = test_all_bias()
     X = [1, 2, 4, 8]
@@ -216,58 +233,6 @@ def print_counter_table_one_bit_in_out():
             sys.stdout.flush()
     sys.stdout.write("\r\n")
     sys.stdout.flush()
-
-
-def test_encryption():
-    print "Testing PRESENT encryption..."
-    print "m:", "FFFFFFFFFFFFFFFF"
-    print "key:", "00000000000000000000"
-    print "expected cipher:", "a112ffc72f68417b"
-    print
-
-    m = "FFFFFFFFFFFFFFFF".decode('hex')
-    key = "00000000000000000000".decode('hex')
-    expected_cipher = "a112ffc72f68417b"
-    res = enc(m, key)
-
-    if res.encode('hex') == expected_cipher:
-        print " Encryption works as expected!"
-        print
-        print
-
-
-
-def encrypt_for_x_rounds(m, key, x):
-    #key = [random.randint(0, 1) for i in range(80)]
-    #key = [0xF]*20
-    print res.encode('hex')
-    tmp = "0000000000000011".decode('hex')
-    for i in range(3):
-        #tmp = "5555555555555511".decode('hex')
-        #tmp = str(i).zfill(16).decode('hex')
-        #tmp = "0000000000000009".decode('hex')
-        if type(tmp) == str:
-            tmp = string2number(tmp)
-        tmp_res = sBoxLayer(tmp)
-        tmp_res = pLayer(tmp_res)
-
-        print number2string_N(tmp_res,8).encode('hex')
-
-        tmp_res = sBoxLayer(tmp_res)
-        tmp_res = pLayer(tmp_res)
-
-        print number2string_N(tmp_res,8).encode('hex')
-
-        #tmp_res = sBoxLayer(tmp_res)
-        #tmp_res = pLayer(tmp_res)
-
-        # tmp_res = sBoxLayer(tmp_res)
-        # tmp_res = pLayer(tmp_res)
-
-        #tmp_res = sBoxLayer(tmp_res)
-        #tmp_res = pLayer(tmp_res)
-
-        print number2string_N(tmp_res,8).encode('hex')
 
 
 def print_linear_characteristic_for_some_rounds():
