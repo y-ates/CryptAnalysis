@@ -276,6 +276,30 @@ def print_linear_characteristic_for_some_rounds():
     print "1 runden iterative charakteristik von (8,0,0...) -> (8,0,0,...)"
         
 
+def linear_hull0(inMask, outMask, R, L=[]):
+    if (inMask % 4) or (outMask % 4):
+        return 0
+    
+    if R == 0:
+        L.append(inMask)
+        L.append(outMask)
+        return 1
+
+    s = [0, 0, 0]
+    sum_ = 0
+    for i in range(3):
+        s[i] = copy.deepcopy(L)
+        sbox = inMask/4
+
+        linear_layer = pLayer(sbox*4+i)        
+        if linear_layer == 3:
+            continue
+
+    sum_ = sum_ + linear_hull(linear_layer, outMask, R-1, s[i])
+    print "here", sum_
+    return 0
+
+
 # Generate all possible linear expressions and initiate linear approximation
 # table
 if __name__ == '__main__':
