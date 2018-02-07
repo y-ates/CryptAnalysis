@@ -146,10 +146,10 @@ def calculate_bias(x, y):
     #
     # X: Input
     # Y: Output
-    # J0*X0 + J1*X1 + J2*X2 + J3*X3 + J4*X4 = J0*Y0 + J1*Y1 + J2*Y2 + J3*Y3 + J4*Y4
+    # A0*X0 + A1*X1 + A2*X2 + A3*X3 + A4*X4 = B0*Y0 + B1*Y1 + B2*Y2 + B3*Y3 + B4*Y4
 
     counter = 0
-    for i in range(16):
+    for i in range(16): # i bit position
         s = 0
 
         for j in x:
@@ -161,7 +161,7 @@ def calculate_bias(x, y):
             # both sides are equal, add 1 to bias
             counter += 1
 
-    return counter-8
+    return counter-8 # bias*16; -8 is to calculate 1/2 into bias
 
 
 # Iterate over all possible (m, c) pairs and return linear approximation table
@@ -280,7 +280,6 @@ def print_linear_characteristic_for_some_rounds():
 # table
 if __name__ == '__main__':
     print "Linear Attack on PRESENT"
-    print "Yakup Ates, 2018\r\n\r\n"
 
     print "- Compute the linear approximation table for the PRESENT S-Box"
     linear_expressions = create_linear_expression()
