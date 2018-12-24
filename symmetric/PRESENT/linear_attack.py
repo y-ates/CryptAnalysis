@@ -17,15 +17,9 @@
 
 import sys
 import random
-import copy
 # from prettytable import PrettyTable
 
 linear_expressions = [0] * 16
-
-
-################################################################################
-# PRESENT functions
-################################################################################
 
 
 # Simply XOR of state and key
@@ -128,28 +122,6 @@ def SBox(i):
 def get_bit(byteval, idx):
     return ((byteval&(1<<idx))!=0)
 
-def test_encryption():
-    print "Testing PRESENT encryption..."
-    print "m:", "FFFFFFFFFFFFFFFF"
-    print "key:", "00000000000000000000"
-    print "expected cipher:", "a112ffc72f68417b"
-    print
-
-    m = "FFFFFFFFFFFFFFFF".decode('hex')
-    key = "00000000000000000000".decode('hex')
-    expected_cipher = "a112ffc72f68417b"
-    res = enc(m, key)
-
-    if res.encode('hex') == expected_cipher:
-        print " Encryption works as expected!"
-        print
-        print
-
-
-################################################################################
-# Task functions
-################################################################################
-
 
 # Create all possible linear expressions
 # @param affine holds the actual activated bits in the expression
@@ -177,19 +149,19 @@ def calculate_bias(x, y):
     # A0*X0 + A1*X1 + A2*X2 + A3*X3 + A4*X4 = B0*Y0 + B1*Y1 + B2*Y2 + B3*Y3 + B4*Y4
 
     counter = 0
-    for i in range(16): # input for sbox
+    for i in range(16): # i is input for Sbox
         s = 0
 
-        for j in x:
+        for j in x: # we evaluate the left side of the equation, result in s
             s ^= get_bit(i, j) # calculate X side of linear expression
-        for j in y:
+        for j in y: # we evaluate the right side of the equation, result added to s
             s ^= get_bit(SBox(i), j) # calculate Y side of linear expression
 
         if s == 0:
             # both sides are equal, add 1 to bias
             counter += 1
 
-    return counter-8 # bias*16; -8 is to calculate 1/2 into bias
+    return counter-8 # Pr[...] = counter/16 -> bias = | Pr[...] - 1/2 | <=>  | Pr[...] - 8/16 |
 
 
 # Iterate over all possible (m, c) pairs and return linear approximation table
@@ -220,11 +192,21 @@ def print_counter_table():
     sys.stdout.flush()
 
 
+def test_one_bit_in_out():
+     X = [1, 2, 4, 8]
+     Y = [1, 2, 4, 8]
+     linear_approximation_table = test_all_bias()
+
+     for i in X:
+         for j in Y:
+             print "Input:", i, "Output:", j, "Bias:", linear_approximation_table[i][j]
+
+
 def print_counter_table_one_bit_in_out():
     linear_approximation_table = test_all_bias()
     X = [1, 2, 4, 8]
     Y = [1, 2, 4, 8]
-
+    
     for i in X:
         sys.stdout.write("\r\n")
         sys.stdout.flush()
@@ -235,49 +217,70 @@ def print_counter_table_one_bit_in_out():
     sys.stdout.flush()
 
 
+def test_encryption():
+    print "Testing PRESENT encryption..."
+    print "m:", "FFFFFFFFFFFFFFFF"
+    print "key:", "00000000000000000000"
+    print "expected cipher:", "a112ffc72f68417b"
+    print
+
+    m = "FFFFFFFFFFFFFFFF".decode('hex')
+    key = "00000000000000000000".decode('hex')
+    expected_cipher = "a112ffc72f68417b"
+    res = enc(m, key)
+
+    if res.encode('hex') == expected_cipher:
+        print " Encryption works as expected!"
+        print
+        print
+
+        
+        
+def encrypt_for_x_rounds(m, key, x):
+    #key = [random.randint(0, 1) for i in range(80)]
+    #key = [0xF]*20
+    print res.encode('hex')
+    tmp = "0000000000000011".decode('hex')
+    for i in range(3):
+        #tmp = "5555555555555511".decode('hex')
+        #tmp = str(i).zfill(16).decode('hex')
+        #tmp = "0000000000000009".decode('hex')
+        if type(tmp) == str:
+            tmp = string2number(tmp)
+        tmp_res = sBoxLayer(tmp)
+        tmp_res = pLayer(tmp_res)
+
+        print number2string_N(tmp_res,8).encode('hex')
+
+        tmp_res = sBoxLayer(tmp_res)
+        tmp_res = pLayer(tmp_res)
+
+        print number2string_N(tmp_res,8).encode('hex')
+
+        #tmp_res = sBoxLayer(tmp_res)
+        #tmp_res = pLayer(tmp_res)
+
+        # tmp_res = sBoxLayer(tmp_res)
+        # tmp_res = pLayer(tmp_res)
+
+        #tmp_res = sBoxLayer(tmp_res)
+        #tmp_res = pLayer(tmp_res)
+
+        print number2string_N(tmp_res,8).encode('hex')
+
+
 def print_linear_characteristic_for_some_rounds():
     print "Input: (1, 0, 0, 0), (0, ...) ..."
     print "Permutation laesst die Maske fix"
     print "<(1,0,0,0), x> = <(1,0,0,0), S(x)> hat einen bias von -2 (siehe oben)"
     print "1 runden iterative charakteristik von (8,0,0...) -> (8,0,0,...)"
+        
 
-
-
-def linear_hull(inMask, outMask, R):
-    return linear_hull0(inMask, outMask, R-1)
-
-    
-def linear_hull0(inMask, outMask, R):
-    print "inmask:", inMask, "outMask:", outMask, "R:", R
-    if (inMask % 4 == 3) or (outMask % 4 == 3):
-        return 0
-    
-    if R == 0:
-        if (inMask // 4) == (outMask // 4):
-            return 1
-        else:
-            return 0
-
-    s = [0, 0, 0]
-    sum_ = 0
-    for i in range(3):
-        sbox = inMask//4
-
-        linear_layer = PBox(sbox*4+i)        
-        if (linear_layer % 4) == 3:
-            continue
-
-        sum_ = sum_ + linear_hull0(linear_layer, outMask, R-1)
-
-    print "inmask:", inMask, "outMask:", outMask, "R:", R, "Sum:", sum_
-    return sum_
-
-            
-    
 # Generate all possible linear expressions and initiate linear approximation
 # table
 if __name__ == '__main__':
     print "Linear Attack on PRESENT"
+    print "Yakup Ates, 2018\r\n\r\n"
 
     print "- Compute the linear approximation table for the PRESENT S-Box"
     linear_expressions = create_linear_expression()
@@ -312,9 +315,9 @@ if __name__ == '__main__':
     print
     print """- Find the total number of linear characteristics in the linear
     hull over r rounds with only one active S-Box per round (For any given
-    one-bit input and output mask)."""
+    one-bit input and output mask).""" 
     # P1.1 - Task 6
-    print linear_hull(0,0,4)
+    #print_linear_characteristic_for_some_rounds()
     print "- done.\r\r"
     print
     print
